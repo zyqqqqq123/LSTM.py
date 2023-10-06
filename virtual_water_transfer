@@ -1,0 +1,45 @@
+import numpy as np
+import pandas as pd
+
+#读取数据:总产出（1，42*31）,中间流量矩阵(42*31,42*31),最终使用矩阵（42*31,31),碳排放（1，42*31）
+
+data_X = np.array(pd.read_excel(r'G:\2012\2012\总产出.xlsx',sheet_name ='Sheet1',header=None))
+data_Z = np.array(pd.read_excel(r'G:\2012\2012\中间投入.xlsx',sheet_name ='Sheet1',header=None))
+data_F = np.array(pd.read_excel(r'G:\2012\2012\最终使用.xlsx',sheet_name ='Sheet1',header=None))
+data_ce = np.array(pd.read_excel(r'G:\2012\2012\用水量.xlsx',sheet_name ='Sheet1',header=None))
+
+writer = pd.ExcelWriter(r'G:\2012\2012\虚拟水转移.xlsx')
+def transfer_carbon(data_X,data_Z,data_F,data_ce):
+
+    A = data_Z / data_X #求直接消耗系数矩阵
+
+    I = np.identity(data_Z.shape[1])
+    Leontif_ = np.linalg.inv(I-A)   #求列昂惕夫逆矩阵
+    direct_c = np.squeeze(data_ce / data_X) ; direct_c_diag = np.diag(direct_c)
+    total_c = np.matmul(direct_c_diag,Leontif_)  #求完全消耗系数矩阵
+
+    VCT = np.matmul(total_c, data_F)  # 输出（31*42,31）转移矩阵，表示31个地区42个行业向31个地区的碳转移量
+    CF_sector = np.sum(VCT, axis=1)  # 输出（31*42，1）向量，表示31个地区42个行业的碳足迹。此处碳足迹定义为：某地区（行业）为满足所有地区（行业）对其的最终需求，需要的碳排放量。
+    CF_region = np.zeros((31))  # 输出（31，1）向量，表示31个地区的碳足迹
+    for i in range(31):
+        CF_region[i] = np.sum(CF_sector[i * 42:(i + 1) * 42])
+
+
+    VCT_result = pd.DataFrame(VCT);
+    VCT_result.to_excel(writer, sheet_name='Transition_matrix')
+    writer.save()
+    CF_sector_result = pd.DataFrame(CF_sector);
+    CF_sector_result.to_excel(writer, sheet_name='Sectors_footprint')
+    writer.save()
+    CF_region_result = pd.DataFrame(CF_region);
+    CF_region_result.to_excel(writer, sheet_name='Regions_footprint')
+    writer.save()
+    writer.close()
+
+
+
+#调用函数
+transfer_carbon(data_X,data_Z,data_F,data_ce)
+
+
+
