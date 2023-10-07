@@ -1,0 +1,89 @@
+#!/user/bin/env python3
+# -*- coding: utf-8 -*-
+import numpy as np
+import pandas as pd
+import h5py
+import scipy.io as scio
+
+
+#----------先将mat读出存到txt--------------
+
+# data = scio.loadmat(r'E:\eco\2012 309 City MRIO\2012 313 MRIO.mat')
+#
+# city_name = data['Meta'][0,0]['City_Name']; np.savetxt(r'E:\eco\2012 309 City MRIO\city_name',city_name,fmt='%s %s %s',delimiter=',')
+# sector_name = data['Meta'][0,0]['Sector_Name']; np.savetxt(r'E:\eco\2012 309 City MRIO\sector_name',sector_name,fmt='%s %s %s',delimiter=',')
+# va_name = data['Meta'][0,0]['VA_Name']; np.savetxt(r'E:\eco\2012 309 City MRIO\va_name',va_name,fmt='%s %s',delimiter=',')
+# f_name = data['Meta'][0,0]['F_Name']; np.savetxt(r'E:\eco\2012 309 City MRIO\f_name',f_name,fmt='%s %s',delimiter=',')
+#
+# ex = data['MRIO'][0,0]['Export']; np.savetxt(r'E:\eco\2012 309 City MRIO\export',ex,delimiter=',')
+# f = data['MRIO'][0,0]['F']; np.savetxt(r'E:\eco\2012 309 City MRIO\final',f,delimiter=',')
+# va = data['MRIO'][0,0]['VA']; np.savetxt(r'E:\eco\2012 309 City MRIO\va',va,delimiter=',')
+# print('finish va')
+# z = data['MRIO'][0,0]['Z']; np.savetxt(r'E:\eco\2012 309 City MRIO\z',z,delimiter=',')
+# print('finish z')
+# input_data = data['MRIO'][0,0]['Input']; np.savetxt(r'E:\eco\2012 309 City MRIO\input',input_data,delimiter=',')
+# import_data = data['MRIO'][0,0]['Import']; np.savetxt(r'E:\eco\2012 309 City MRIO\import',import_data,delimiter=',')
+# print('finish import')
+# x = data['MRIO'][0,0]['X']; np.savetxt(r'E:\eco\2012 309 City MRIO\x',x,delimiter=',')
+
+
+#----------然后按地区合并，按照Z、F、VA、X的顺序--------------
+
+
+def read_txt(path):
+    fp=open(path,'r')
+    ls=[]
+    for line in fp:
+        line=line.strip('\n')   #将\n去掉
+        ls.append(line.split(','))   #将空格作为分隔符将一个字符切割成一个字符数组
+
+    fp.close()
+    ls=np.array(ls,dtype=float)   #将其转换成numpy的数组，并定义数据类型为float
+    return ls
+
+# Z_origin = read_txt(r'E:\eco\2012_309_City_MRIO\z')
+#
+# Z_step1 = np.zeros((42 * 313, 313))
+# for i in range(313):
+#     Z_step1[:,i] = np.sum(Z_origin[:,42*i:42*i+42],axis=1)
+#
+# Z_step2 = np.zeros((313,313))
+# for j in range(313):
+#     Z_step2[j,:] = np.sum(Z_step1[42*j:42*j+42,:],axis=0)
+#
+# np.savetxt(r'E:\eco\2012_309_City_MRIO\Z_merge',Z_step2,delimiter=',')
+
+# F_origin = read_txt(r'E:\eco\2012_309_City_MRIO\final')
+#
+# F_step1 = np.zeros((42*313,313))
+# for i in range(313):
+#     F_step1[:,i] = np.sum(F_origin[:,5*i:5*i+5],axis=1)
+#
+# F_step2 = np.zeros((313,313))
+# for j in range(313):
+#     F_step2[j,:] = np.sum(F_step1[42*j:42*j+42,:],axis=0)
+#
+# np.savetxt(r'E:\eco\2012_309_City_MRIO\F_merge',F_step2,delimiter=',')
+
+# VA_origin = read_txt(r'E:\eco\2012_309_City_MRIO\va')
+# VA_origin = VA_origin[:,:13146]
+# VA_step1 = np.zeros(13146)
+# for i in range(13146):
+#     VA_step1[i] = np.sum(VA_origin[:,i],axis=0)
+#
+# VA_step2 = np.zeros(313)
+# for j in range(313):
+#     VA_step2[j] = np.sum(VA_origin[42*j:42*j+42])
+#
+# np.savetxt(r'E:\eco\2012_309_City_MRIO\va_merge',VA_step2,delimiter=',')
+
+# x_origin = read_txt(r'E:\eco\2012_309_City_MRIO\x')
+#
+#
+# VA_step2 = np.zeros(313)
+# for j in range(313):
+#     VA_step2[j] = np.sum(x_origin[42*j:42*j+42])
+#
+# np.savetxt(r'E:\eco\2012_309_City_MRIO\x_merge',VA_step2,delimiter=',')
+
+
